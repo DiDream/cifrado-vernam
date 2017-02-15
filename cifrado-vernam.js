@@ -20,7 +20,7 @@ function resizeToken(token, size){
     return token.substring(0,size);
 }
 
-function vernamEncryption(message, token) {
+function vernamEncryption(message, token, recipher) {
     var
         result = '',
         ascii = asciiEncode(message);
@@ -28,66 +28,52 @@ function vernamEncryption(message, token) {
     token = token? asciiEncode(resizeToken(token,message.length)) : generateToken(ascii.length);
 
     for(var i=0; i< ascii.length; i++){
-
-        result += ascii[i]==token[i]? 0:1; //XOR operation
+        var temp = ascii[i]==token[i]? 0:1; //XOR operation
+        for(var j=1; j<recipher; j++){
+          temp = temp==token[i]? 0:1;
+        }
+        result += temp;
     }
-    console.log(token);
-    console.log(result);
+    console.log('binary token: ',token);
+    console.log('binary result: ',result);
 
     return asciiDecode(result);
 }
+
+// A partir del mensaje obtiene su codificacion binaria
 function asciiEncode(message){
-    var asciiMessage = '';
+    var result = '';
     for (var i =0; i<message.length; i++){
         var ascii = message[i].charCodeAt().toString(2);
         while(ascii.length < 8){
             ascii = '0' + ascii;
         }
-        asciiMessage = asciiMessage + ascii;
+        result = result + ascii;
         console.log( ascii+ " " + message[i]);
     }
-    console.log(asciiMessage);
-    return asciiMessage;
+    console.log(result);
+    return result;
 }
-function asciiDecode(ascii) {
+// A partir del string de numeros binarios obtiene los caracteres
+function asciiDecode(asciiBinary) {
     var result = '';
     var i=0;
-    while(i < ascii.length){
-        var block = ascii.substring(i, i+=8);
+    while(i < asciiBinary.length){
+        var block = asciiBinary.substring(i, i+=8);
          console.log(String.fromCharCode(parseInt(block,2)), parseInt(block,2));
         result += String.fromCharCode(parseInt(block,2));
     }
     console.log(result);
     return result;
 }
-// function encrypt(message, token){
-//     var
-//         asciiMessage = asciiEncode(message),
-//         encryption = vernamEncryption(asciiMessage, token),
-//         encryptedAsciiMessage = encryption.result,
-//         token = encryption.token,
-//         encryptedMessage = asciiDecode(encryptedAsciiMessage);
-//
-//     return encryptedMessage;
-//
-// }
-// function decrypt(message, token) {
-//     var
-//         asciiEncryptedMessage = asciiEncode(message),
-//         decryption = vernamEncryption(asciiEncryptedMessage, token),
-//         decryptedAsciiMessage = decryption.result,
-//         token = decryption.token,
-//         decryptedMessage = asciiDecode(decryptedAsciiMessage);
-//
-//     return decryptedMessage;
-//
-// }
+
 $('.cifrado button.cifrar').on('click', function(){
     var message = $('#message').val();
     var token = $('.cifrado input[type="checkbox"]').is(":checked")? $('.cifrado .token').val(): null;
+    var recipher = $('.cifrado input.recipher').val() ;
 
     if(message != '') {
-        $('.cifrado .result').text(vernamEncryption(message, token));
+        $('.cifrado .result').text(vernamEncryption(message, token,recipher));
     }else {
         alert('Inserta un mensaje para cifrarlo');
     }
@@ -97,8 +83,9 @@ $('.descifrado button.descifrar').on('click', function(){
 
     var message = $('#encrypted-message').val();
     var token = $('.descifrado input[type="checkbox"]').is(":checked")? $('.descifrado .token').val(): null;
+    var recipher = $('.cifrado input.recipher').val();
     if(message != '') {
-        $('.descifrado .result').text(vernamEncryption(message, token));
+        $('.descifrado .result').text(vernamEncryption(message, token,recipher));
     }else {
         alert('Inserta un mensaje cifrado para descifrarlo');
     }

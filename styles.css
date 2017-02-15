@@ -80,10 +80,13 @@ article button{
     width: 200px;
     cursor: pointer;
 }
+article span {
+  font-size: 10px;
+  font-weight: 800;
+}
 article .checkbox {
     margin-top: 5px;
-    font-size: 10px;
-    font-weight: 800;
+
 }
 
 article p.result {
