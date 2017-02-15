@@ -13,19 +13,26 @@ function generateToken(size){
     }
     return token;
 }
+function resizeToken(token, size){
+    while(token.length<size){
+        token+=token;
+    }
+    return token.substring(0,size);
+}
+
 function vernamEncryption(message, token) {
     var
         result = '',
         ascii = asciiEncode(message);
 
-    token = token? asciiEncode(token): generateToken(ascii.length);
+    token = token? asciiEncode(resizeToken(token,message.length)) : generateToken(ascii.length);
 
     for(var i=0; i< ascii.length; i++){
 
         result += ascii[i]==token[i]? 0:1; //XOR operation
     }
-    // console.log(token);
-    // console.log(result);
+    console.log(token);
+    console.log(result);
 
     return asciiDecode(result);
 }
@@ -37,9 +44,9 @@ function asciiEncode(message){
             ascii = '0' + ascii;
         }
         asciiMessage = asciiMessage + ascii;
-        // console.log( ascii+ " " + message[i]);
+        console.log( ascii+ " " + message[i]);
     }
-    // console.log(asciiMessage);
+    console.log(asciiMessage);
     return asciiMessage;
 }
 function asciiDecode(ascii) {
@@ -47,10 +54,10 @@ function asciiDecode(ascii) {
     var i=0;
     while(i < ascii.length){
         var block = ascii.substring(i, i+=8);
-        //  console.log(String.fromCharCode(parseInt(block,2)), parseInt(block,2));
+         console.log(String.fromCharCode(parseInt(block,2)), parseInt(block,2));
         result += String.fromCharCode(parseInt(block,2));
     }
-    // console.log(result);
+    console.log(result);
     return result;
 }
 // function encrypt(message, token){
