@@ -1,41 +1,69 @@
 'use strict'
 
+function vernamEncryption(ascii) {
+    var
+        token = '',
+        result = '';
 
+    for(var i=0; i< ascii.length; i++){
+        var randomBinary = Math.floor(Math.random()*10%2);
+        token += randomBinary;
+        result += ascii[i]==randomBinary? 0:1; //XOR operation
+    }
+
+    console.log(token);
+    console.log(result);
+
+    return {
+        token,
+        result
+    };
+}
+function asciiEncode(message){
+    var asciiMessage = '';
+    for (var i =0; i<message.length; i++){
+        var ascii = message[i].charCodeAt().toString(2);
+        while(ascii.length < 8){
+            ascii = '0' + ascii;
+        }
+        asciiMessage = asciiMessage + ascii;
+        console.log( ascii+ " " + message[i]);
+    }
+    console.log(asciiMessage);
+    return asciiMessage;
+}
+function asciiDecode(ascii) {
+    var result = '';
+    var i=0;
+    while(i < ascii.length){
+        var block = ascii.substring(i, i+=8);
+         console.log(String.fromCharCode(parseInt(block,2)), parseInt(block,2));
+        result += String.fromCharCode(parseInt(block,2));
+    }
+    console.log(result);
+    return result;
+}
+function encrypt (message){
+    var
+        asciiMessage = asciiEncode(message),
+        encryption = vernamEncryption(asciiMessage),
+        encryptedAsciiMessage = encryption.result,
+        token = encryption.token,
+        encryptedMessage = asciiDecode(encryptedAsciiMessage);
+
+}
+function decrypt(message) {
+    var
+        asciiEncryptedMessage = asciiEncode(message),
+        decryption = vernamEncryption(asciiEncryptedMessage),
+        decryptedAsciiMessage = decryption.result,
+        token = decryption.token,
+        decryptedMessage = asciiDecode(decryptedAsciiMessage);
+
+}
 $('.cifrado button').on('click', function(){
-  var assiMessage = '';
-  var message = $('#message').val();
-  var randomKey = '';
-  for (var i =0; i<message.length; i++){
-    var assi = message[i].charCodeAt().toString(2);
-    while(assi.length < 7){
-      assi = '0' + assi;
-    }
-    assiMessage = assiMessage + assi;
-    console.log( assi+ " " + message[i]);
-
-  }
-  console.log(assiMessage);
-
-  var messageLength = assiMessage.length;
-  var encryptedMessage = '';
-  for(var i=0; i< messageLength; i++){
-    var randomBinary = Math.floor(Math.random()*10%2);
-    randomKey = randomKey + randomBinary;
-    if (assiMessage[i] == randomBinary){
-      encryptedMessage = encryptedMessage + 0;
-    }else {
-      encryptedMessage = encryptedMessage + 1;
-    }
-  }
-  console.log(randomKey);
-  console.log('El mensaje cifrado en binario es:');
-  console.log(encryptedMessage);
-  var number = 0;
-  var mensaje = '';
-  while(number < messageLength){
-    var block = encryptedMessage.substring(number, number+7);
-    console.log(String.fromCharCode(parseInt(block,2)), number);
-    number = number + 7 ;
-  }
-  console.log(mensaje);
+    encrypt($('#message').val());
+})
+$('.descifrado button').on('click', function(){
+    decrypt($('#encrypted-message').val());
 })
