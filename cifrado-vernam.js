@@ -1,23 +1,33 @@
 'use strict'
 
-function vernamEncryption(ascii) {
+$('input[type="checkbox"]').on('change', function(){
+    var action = '.'+$(this).data('action');
+
+    $( action +' input.token').toggleClass('enable');
+})
+
+function generateToken(size){
+    var token ='';
+    for(var i=0; i<size; i++){
+        token += Math.floor(Math.random()*10%2);
+    }
+    return token;
+}
+function vernamEncryption(message, token) {
     var
-        token = '',
-        result = '';
+        result = '',
+        ascii = asciiEncode(message);
+
+    token = token? asciiEncode(token): generateToken(ascii.length);
 
     for(var i=0; i< ascii.length; i++){
-        var randomBinary = Math.floor(Math.random()*10%2);
-        token += randomBinary;
-        result += ascii[i]==randomBinary? 0:1; //XOR operation
+
+        result += ascii[i]==token[i]? 0:1; //XOR operation
     }
+    // console.log(token);
+    // console.log(result);
 
-    console.log(token);
-    console.log(result);
-
-    return {
-        token,
-        result
-    };
+    return asciiDecode(result);
 }
 function asciiEncode(message){
     var asciiMessage = '';
@@ -27,9 +37,9 @@ function asciiEncode(message){
             ascii = '0' + ascii;
         }
         asciiMessage = asciiMessage + ascii;
-        console.log( ascii+ " " + message[i]);
+        // console.log( ascii+ " " + message[i]);
     }
-    console.log(asciiMessage);
+    // console.log(asciiMessage);
     return asciiMessage;
 }
 function asciiDecode(ascii) {
@@ -37,33 +47,53 @@ function asciiDecode(ascii) {
     var i=0;
     while(i < ascii.length){
         var block = ascii.substring(i, i+=8);
-         console.log(String.fromCharCode(parseInt(block,2)), parseInt(block,2));
+        //  console.log(String.fromCharCode(parseInt(block,2)), parseInt(block,2));
         result += String.fromCharCode(parseInt(block,2));
     }
-    console.log(result);
+    // console.log(result);
     return result;
 }
-function encrypt (message){
-    var
-        asciiMessage = asciiEncode(message),
-        encryption = vernamEncryption(asciiMessage),
-        encryptedAsciiMessage = encryption.result,
-        token = encryption.token,
-        encryptedMessage = asciiDecode(encryptedAsciiMessage);
+// function encrypt(message, token){
+//     var
+//         asciiMessage = asciiEncode(message),
+//         encryption = vernamEncryption(asciiMessage, token),
+//         encryptedAsciiMessage = encryption.result,
+//         token = encryption.token,
+//         encryptedMessage = asciiDecode(encryptedAsciiMessage);
+//
+//     return encryptedMessage;
+//
+// }
+// function decrypt(message, token) {
+//     var
+//         asciiEncryptedMessage = asciiEncode(message),
+//         decryption = vernamEncryption(asciiEncryptedMessage, token),
+//         decryptedAsciiMessage = decryption.result,
+//         token = decryption.token,
+//         decryptedMessage = asciiDecode(decryptedAsciiMessage);
+//
+//     return decryptedMessage;
+//
+// }
+$('.cifrado button.cifrar').on('click', function(){
+    var message = $('#message').val();
+    var token = $('.cifrado input[type="checkbox"]').is(":checked")? $('.cifrado .token').val(): null;
 
-}
-function decrypt(message) {
-    var
-        asciiEncryptedMessage = asciiEncode(message),
-        decryption = vernamEncryption(asciiEncryptedMessage),
-        decryptedAsciiMessage = decryption.result,
-        token = decryption.token,
-        decryptedMessage = asciiDecode(decryptedAsciiMessage);
+    if(message != '') {
+        $('.cifrado .result').text(vernamEncryption(message, token));
+    }else {
+        alert('Inserta un mensaje para cifrarlo');
+    }
 
-}
-$('.cifrado button').on('click', function(){
-    encrypt($('#message').val());
 })
-$('.descifrado button').on('click', function(){
-    decrypt($('#encrypted-message').val());
+$('.descifrado button.descifrar').on('click', function(){
+
+    var message = $('#encrypted-message').val();
+    var token = $('.descifrado input[type="checkbox"]').is(":checked")? $('.descifrado .token').val(): null;
+    if(message != '') {
+        $('.descifrado .result').text(vernamEncryption(message, token));
+    }else {
+        alert('Inserta un mensaje cifrado para descifrarlo');
+    }
+
 })

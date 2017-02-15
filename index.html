@@ -19,14 +19,24 @@
       <article class="cifrado">
         <header><h3>CIFRAR MENSAJE</h3></header>
         <input id="message" type="text" placeholder="Inserta tu mensaje">
+        <input class="token" type="text" placeholder="Introduce la clave">
+        <div class="checkbox">
+            <span>CLAVE MANUAL</span>
+            <input type="checkbox" data-action="cifrado">
+        </div>
 
-        <button type="button" >Cifrar mensaje</button>
-        <p class="result">Resultado del cifrado</p>
+        <button type="button" class="cifrar" >CIFRAR</button>
+        <p class="result"></p>
       </article>
       <article class="descifrado">
         <header><h3>DESCIFRAR MENSAJE</h3></headeer>
-        <input id="encrypted-message"type="text" placeholder="Inserta tu mensaje cifrado">
-        <button type="button">Descifrar mensaje</button>
+        <input id="encrypted-message" type="text" placeholder="Inserta tu mensaje cifrado">
+        <input class="token" type="text" placeholder="Introduce la clave">
+        <div class="checkbox">
+            <span>CLAVE MANUAL</span>
+            <input type="checkbox" data-action="descifrado">
+        </div>
+        <button type="button" class="descifrar">Descifrar mensaje</button>
         <p class="result"></p>
       </article>
     </section>
